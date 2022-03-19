@@ -6,10 +6,6 @@ This was built from these three examples.
 """
 
 import PyQt5.QtWidgets as QtWidgets
-# HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
-# My guess here is that the GL module, when imported, does some sort of necessary
-# init that prevents the seg falt
-from OpenGL import GL
 from PyQt5.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QOpenGLFramebufferObject
 from PyQt5.QtOpenGL import QGLContext
@@ -96,8 +92,8 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
             # width and height are floats
             width = int(rect.width() * factor)
             height = int(rect.height() * factor)
+            fbo = int(self.framebufferObject().handle())
 
-            fbo = GL.glGetIntegerv(GL.GL_DRAW_FRAMEBUFFER_BINDING)
             self.ctx.render(flip_y=False, opengl_fbo={'w': width, 'h': height, 'fbo': fbo})
 
 

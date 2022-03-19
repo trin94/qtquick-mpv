@@ -1,0 +1,6 @@
+PyOpenGL
+python-mpv
+PyQt5
+PyQt6
+PySide2
+PySide6

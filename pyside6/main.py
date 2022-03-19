@@ -5,26 +5,18 @@ This was built from these three examples.
 - https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
 """
 
-import ctypes
-
 # HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
 # My guess here is that the GL module, when imported, does some sort of necessary
 # init that prevents the seg falt
+import ctypes
+
 from OpenGL import GL, GLX
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSize, QUrl
+from PySide6.QtCore import QSize, QUrl, Slot
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from PySide6.QtQml import qmlRegisterType
-from PySide6.QtQuick import QQuickFramebufferObject, QQuickView
+from PySide6.QtQuick import QQuickFramebufferObject, QQuickView, QSGRendererInterface, QQuickWindow
 from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
-
-
-# from PyQt5.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
-# from PyQt5.QtGui import QOpenGLFramebufferObject
-# import PyQt5.QtWidgets as QtWidgets
-#
-# from PyQt5.QtQuick import QQuickFramebufferObject, QQuickView
-# from PyQt5.QtQml import qmlRegisterType
 
 
 def get_process_address(_, name):
@@ -53,7 +45,7 @@ class MpvObject(QQuickFramebufferObject):
         """Function for mpv to call to trigger a framebuffer update"""
         self.onUpdate.emit()
 
-    # @Slot()
+    @Slot()
     def doUpdate(self):
         """Slot for receiving the update event on the correct thread"""
         self.update()
@@ -64,7 +56,7 @@ class MpvObject(QQuickFramebufferObject):
         print("Calling overridden createRenderer")
         return MpvRenderer(self)
 
-    # @Slot(str)
+    @Slot(str)
     def play(self, url):
         """Temporary adapter fuction that allowing playing media from QML"""
         self.mpv.play(url)
@@ -110,6 +102,8 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
+    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
+    QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
 
     qmlRegisterType(MpvObject, 'mpvtest', 1, 0, "MpvObject")
 

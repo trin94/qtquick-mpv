@@ -5,24 +5,25 @@ This was built from these three examples.
 - https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
 """
 
-import ctypes
-
 import PyQt6.QtWidgets as QtWidgets
 # HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
 # My guess here is that the GL module, when imported, does some sort of necessary
 # init that prevents the seg falt
-from OpenGL import GL, GLX
+from OpenGL import GL
+
 from PyQt6.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QOpenGLContext
 from PyQt6.QtOpenGL import QOpenGLFramebufferObject
 from PyQt6.QtQml import qmlRegisterType
-from PyQt6.QtQuick import QQuickFramebufferObject, QQuickView
+from PyQt6.QtQuick import QQuickFramebufferObject, QQuickView, QQuickWindow, QSGRendererInterface
 from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
 
 
 def get_process_address(_, name):
-    """This function allows looking up OpenGL functions."""
-    address = GLX.glXGetProcAddress(name.decode("utf-8"))
-    return ctypes.cast(address, ctypes.c_void_p).value
+    glctx = QOpenGLContext.currentContext()
+    if glctx is None:
+        return 0
+    return int(glctx.getProcAddress(name))
 
 
 class MpvObject(QQuickFramebufferObject):
@@ -39,7 +40,7 @@ class MpvObject(QQuickFramebufferObject):
         self.mpv = MPV(ytdl=True)
         self.mpv_gl = None
         self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(get_process_address)
-        # self.onUpdate.connect(self.doUpdate)
+        self.onUpdate.connect(self.doUpdate)
 
     def on_update(self):
         """Function for mpv to call to trigger a framebuffer update"""
@@ -85,9 +86,8 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
                                         opengl_init_params={
                                             'get_proc_address': self.obj._proc_addr_wrapper
                                         })
-            # self.ctx.update_cb = self.obj.on_update
+            self.ctx.update_cb = self.obj.on_update
 
-        print("return")
         return QQuickFramebufferObject.Renderer.createFramebufferObject(self, size)
 
     def render(self):
@@ -111,10 +111,10 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
-    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
+    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
+    QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
 
     qmlRegisterType(MpvObject, 'mpvtest', 1, 0, "MpvObject")
-
     view = QQuickView()
 
     url = QUrl("layouts/mpv.qml")

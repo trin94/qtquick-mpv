@@ -5,24 +5,25 @@ This was built from these three examples.
 - https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
 """
 
-import ctypes
-
 import PyQt5.QtWidgets as QtWidgets
 # HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
 # My guess here is that the GL module, when imported, does some sort of necessary
 # init that prevents the seg falt
-from OpenGL import GL, GLX
+from OpenGL import GL
 from PyQt5.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QOpenGLFramebufferObject
+from PyQt5.QtOpenGL import QGLContext
 from PyQt5.QtQml import qmlRegisterType
 from PyQt5.QtQuick import QQuickFramebufferObject, QQuickView
 from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
 
 
 def get_process_address(_, name):
-    """This function allows looking up OpenGL functions."""
-    address = GLX.glXGetProcAddress(name.decode("utf-8"))
-    return ctypes.cast(address, ctypes.c_void_p).value
+    glctx = QGLContext.currentContext()
+    if glctx is None:
+        return 0
+    addr = int(glctx.getProcAddress(name.decode('utf-8')))
+    return addr
 
 
 class MpvObject(QQuickFramebufferObject):

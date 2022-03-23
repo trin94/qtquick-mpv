@@ -49,7 +49,10 @@ class MpvObject(QQuickFramebufferObject):
 
     def createRenderer(self) -> 'QQuickFramebufferObject.Renderer':
         print("MpvObject.createRenderer")
-        return MpvRenderer(self)
+        # todo: Workaround https://bugreports.qt.io/browse/PYSIDE-1868
+        # Once the fix is rolled out, this should be inlined
+        self._x = MpvRenderer(self)
+        return self._x
 
     @Slot(str)
     def play(self, url):
@@ -96,7 +99,6 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
-    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
 
     qmlRegisterType(MpvObject, 'mpvtest', 1, 0, "MpvObject")
 

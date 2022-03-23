@@ -9,10 +9,10 @@
 
 ## State
 
-* PyQt 5 - **working**
-* PyQt 6 - **not working**
-* PySide 2 - **not working**
-* PySide 6 - **not working**
+* PyQt5 - **working**
+* PyQt6 - **not working**
+* PySide2 - **working**
+* PySide6 - **working**
 
 ## Video Licences
 

@@ -16,7 +16,7 @@ from PySide6.QtCore import QSize, QUrl, Slot, Signal
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from PySide6.QtQml import qmlRegisterType
 from PySide6.QtQuick import QQuickFramebufferObject, QQuickView, QSGRendererInterface, QQuickWindow
-from mpv import MPV, OpenGlCbGetProcAddrFn, MpvRenderContext
+from mpv import MPV, MpvGlGetProcAddressFn, MpvRenderContext
 
 
 def get_process_address(_, name):
@@ -35,7 +35,7 @@ class MpvObject(QQuickFramebufferObject):
         super(MpvObject, self).__init__(parent)
         self.mpv = MPV(ytdl=True)  # terminal="yes", msg_level="all=v", vo="gpu")
         self.mpv_gl = None
-        self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(get_process_address)
+        self._proc_addr_wrapper = MpvGlGetProcAddressFn(get_process_address)
         self.onUpdate.connect(self.doUpdate)
 
     def on_update(self):

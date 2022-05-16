@@ -11,7 +11,7 @@ from PyQt6.QtGui import QOpenGLContext
 from PyQt6.QtOpenGL import QOpenGLFramebufferObject
 from PyQt6.QtQml import qmlRegisterType
 from PyQt6.QtQuick import QQuickFramebufferObject, QQuickView, QQuickWindow, QSGRendererInterface
-from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
+from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
 
 def get_process_address(_, name):
@@ -32,7 +32,7 @@ class MpvObject(QQuickFramebufferObject):
         super(MpvObject, self).__init__(parent)
         self.mpv = MPV(ytdl=True)  # terminal="yes", msg_level="all=v", vo="gpu")
         self.mpv_gl = None
-        self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(get_process_address)
+        self._proc_addr_wrapper = MpvGlGetProcAddressFn(get_process_address)
         self.onUpdate.connect(self.doUpdate)
 
     def on_update(self):

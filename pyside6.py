@@ -1,6 +1,3 @@
-# HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
-# My guess here is that the GL module, when imported, does some sort of necessary
-# init that prevents the seg falt
 import ctypes
 import platform
 

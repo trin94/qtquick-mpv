@@ -1,10 +1,3 @@
-"""
-This was built from these three examples.
-- https://gist.github.com/jaseg/657e8ecca3267c0d82ec85d40f423caa
-- https://gist.github.com/cosven/b313de2acce1b7e15afda263779c0afc
-- https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
-"""
-
 import PyQt6.QtWidgets as QtWidgets
 from PyQt6.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QOpenGLContext
@@ -30,7 +23,7 @@ class MpvObject(QQuickFramebufferObject):
     def __init__(self, parent=None):
         print("MpvObject.init")
         super(MpvObject, self).__init__(parent)
-        self.mpv = MPV(ytdl=True)  # terminal="yes", msg_level="all=v", vo="gpu")
+        self.mpv = MPV(ytdl=True, vo='libmpv')  # terminal="yes", msg_level="all=v", vo="gpu")
         self.mpv_gl = None
         self._proc_addr_wrapper = MpvGlGetProcAddressFn(get_process_address)
         self.onUpdate.connect(self.doUpdate)
@@ -92,14 +85,14 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
-    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
-    QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
+    QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
+    # QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGLRhi)
 
     qmlRegisterType(MpvObject, 'mpvtest', 1, 0, "MpvObject")
 
     view = QQuickView()
 
-    url = QUrl("layouts/window.qml")
+    url = QUrl("window.qml")
 
     import locale
 

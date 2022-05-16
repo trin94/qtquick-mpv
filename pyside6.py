@@ -2,8 +2,8 @@
 # My guess here is that the GL module, when imported, does some sort of necessary
 # init that prevents the seg falt
 import ctypes
+import platform
 
-from OpenGL import GLX
 from PySide6 import QtWidgets
 from PySide6.QtCore import QSize, QUrl, Slot, Signal
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
@@ -11,11 +11,26 @@ from PySide6.QtQml import qmlRegisterType
 from PySide6.QtQuick import QQuickFramebufferObject, QQuickView, QSGRendererInterface, QQuickWindow
 from mpv import MPV, MpvGlGetProcAddressFn, MpvRenderContext
 
+system = platform.system()
 
-def get_process_address(_, name):
-    print("get_process_address", name.decode('utf-8'))
-    address = GLX.glXGetProcAddress(name.decode("utf-8"))
-    return ctypes.cast(address, ctypes.c_void_p).value
+
+def get_process_address(_, name_bytes: bytes):
+    name_str: str = name_bytes.decode("utf-8")
+
+    if system == 'Linux':
+        from OpenGL import GLX
+        address = GLX.glXGetProcAddress(name_str)
+    elif system == 'Windows':
+        from OpenGL import WGL
+        address = WGL.wglGetProcAddress(name_bytes)
+    else:
+        raise NotImplementedError(f'System {system} not implemented')
+
+    address = ctypes.cast(address, ctypes.c_void_p).value
+
+    print("func", name_str, 'address', address)
+
+    return address
 
 
 class MpvObject(QQuickFramebufferObject):

@@ -1,9 +1,6 @@
 import ctypes
+import platform
 
-# HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
-# My guess here is that the GL module, when imported, does some sort of necessary
-# init that prevents the seg falt
-from OpenGL import GLX
 from PySide2 import QtWidgets
 from PySide2.QtCore import QSize, QUrl, Slot, Signal
 from PySide2.QtGui import QOpenGLFramebufferObject
@@ -11,11 +8,26 @@ from PySide2.QtQml import qmlRegisterType
 from PySide2.QtQuick import QQuickFramebufferObject, QQuickView
 from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
+system = platform.system()
 
-def get_process_address(_, name):
-    print("get_process_address", name.decode('utf-8'))
-    address = GLX.glXGetProcAddress(name.decode("utf-8"))
-    return ctypes.cast(address, ctypes.c_void_p).value
+
+def get_process_address(_, name_bytes: bytes):
+    name_str: str = name_bytes.decode("utf-8")
+
+    if system == 'Linux':
+        from OpenGL import GLX
+        address = GLX.glXGetProcAddress(name_str)
+    elif system == 'Windows':
+        from OpenGL import WGL
+        address = WGL.wglGetProcAddress(name_bytes)
+    else:
+        raise NotImplementedError(f'System {system} not implemented')
+
+    address = ctypes.cast(address, ctypes.c_void_p).value
+
+    print("func", name_str, 'address', address)
+
+    return address
 
 
 class MpvObject(QQuickFramebufferObject):

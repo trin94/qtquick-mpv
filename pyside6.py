@@ -51,11 +51,7 @@ class MpvObject(QQuickFramebufferObject):
         self.update()
 
     def createRenderer(self) -> 'QQuickFramebufferObject.Renderer':
-        print("MpvObject.createRenderer")
-        # todo: Workaround https://bugreports.qt.io/browse/PYSIDE-1868
-        # Once the fix is rolled out, this should be inlined
-        self._x = MpvRenderer(self)
-        return self._x
+        return MpvRenderer(self)
 
     @Slot(str)
     def play(self, url):

@@ -13,7 +13,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: renderer.play("./../resources/test1.mkv")
+            onClicked: renderer.play("resources/test1.mkv")
         }
     }
 

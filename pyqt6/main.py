@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     view = QQuickView()
 
-    url = QUrl("layouts/mpv.qml")
+    url = QUrl("layouts/window.qml")
 
     import locale
 

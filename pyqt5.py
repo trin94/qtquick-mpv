@@ -31,18 +31,16 @@ class MpvObject(QQuickFramebufferObject):
     def __init__(self, parent=None):
         print("MpvObject.init")
         super(MpvObject, self).__init__(parent)
-        self.mpv = MPV(ytdl=True)  # terminal="yes", msg_level="all=v", vo="gpu")
+        self.mpv = MPV(ytdl=True, vo='libmpv', terminal="yes", msg_level="all=v")
         self.mpv_gl = None
         self._proc_addr_wrapper = MpvGlGetProcAddressFn(get_process_address)
         self.onUpdate.connect(self.doUpdate)
 
     def on_update(self):
-        print("MpvObject.on_update")
         self.onUpdate.emit()
 
     @pyqtSlot()
     def doUpdate(self):
-        print("MpvObject.doUpdate")
         self.update()
 
     def createRenderer(self) -> 'QQuickFramebufferObject.Renderer':
@@ -77,8 +75,6 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
         return QQuickFramebufferObject.Renderer.createFramebufferObject(self, size)
 
     def render(self):
-        print("MpvRenderer.render")
-
         if self.ctx:
             factor = self.obj.scale()
             rect = self.obj.size()

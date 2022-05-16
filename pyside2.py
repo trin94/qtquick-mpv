@@ -1,10 +1,3 @@
-"""
-This was built from these three examples.
-- https://gist.github.com/jaseg/657e8ecca3267c0d82ec85d40f423caa
-- https://gist.github.com/cosven/b313de2acce1b7e15afda263779c0afc
-- https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
-"""
-
 import ctypes
 
 # HELP: currently, we need import GL module，otherwise it will raise seg fault on Linux(Ubuntu 18.04)
@@ -103,7 +96,7 @@ if __name__ == '__main__':
 
     view = QQuickView()
 
-    url = QUrl("layouts/mpv.qml")
+    url = QUrl("window.qml")
 
     import locale
 

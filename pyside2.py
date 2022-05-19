@@ -1,4 +1,5 @@
 import ctypes
+import os
 import platform
 
 from PySide2 import QtWidgets
@@ -6,6 +7,8 @@ from PySide2.QtCore import QSize, QUrl, Slot, Signal
 from PySide2.QtGui import QOpenGLFramebufferObject
 from PySide2.QtQml import qmlRegisterType
 from PySide2.QtQuick import QQuickFramebufferObject, QQuickView
+
+os.environ["PATH"] = os.path.dirname(__file__) + os.pathsep + os.environ["PATH"]
 from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
 system = platform.system()

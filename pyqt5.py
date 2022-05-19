@@ -6,12 +6,15 @@ This was built from these three examples.
 - https://gist.github.com/cosven/b313de2acce1b7e15afda263779c0afc
 - https://github.com/mpv-player/mpv-examples/tree/master/libmpv/qml
 """
+import os
 
 import PyQt5.QtWidgets as QtWidgets
 from PyQt5.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QOpenGLFramebufferObject, QOpenGLContext
 from PyQt5.QtQml import qmlRegisterType
 from PyQt5.QtQuick import QQuickFramebufferObject, QQuickView
+
+os.environ["PATH"] = os.path.dirname(__file__) + os.pathsep + os.environ["PATH"]
 from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
 

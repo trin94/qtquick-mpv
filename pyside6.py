@@ -64,7 +64,7 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
     This class implements the QQuickFramebufferObject's Renderer subsystem.
     It augments the base renderer with an instance of mpv's render API."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QQuickFramebufferObject):
         print("MpvRenderer.init")
         super(MpvRenderer, self).__init__()
         self.obj = parent

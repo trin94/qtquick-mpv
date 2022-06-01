@@ -1,9 +1,13 @@
+import os
+
 import PyQt6.QtWidgets as QtWidgets
 from PyQt6.QtCore import QUrl, QSize, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QOpenGLContext
 from PyQt6.QtOpenGL import QOpenGLFramebufferObject
 from PyQt6.QtQml import qmlRegisterType
 from PyQt6.QtQuick import QQuickFramebufferObject, QQuickView, QQuickWindow, QSGRendererInterface
+
+os.environ["PATH"] = os.path.dirname(__file__) + os.pathsep + os.environ["PATH"]
 from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
 
@@ -50,7 +54,7 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
     This class implements the QQuickFramebufferObject's Renderer subsystem.
     It augments the base renderer with an instance of mpv's render API."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QQuickFramebufferObject):
         print("MpvRenderer.init")
         super(MpvRenderer, self).__init__()
         self.obj = parent

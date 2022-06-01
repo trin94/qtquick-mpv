@@ -12,8 +12,8 @@
 |---------|:-------:|:-----:|
 | PyQt5   |    ✅    |   ✅   |
 | PyQt6   |    ❌    |   ❌   |
-| PySide2 |    ❌    |   ✅   |
-| PySide6 |    ❌    |   ✅   |
+| PySide2 |    ✅    |   ✅   |
+| PySide6 |    ✅    |   ✅   |
 
 ## Video Licences
 

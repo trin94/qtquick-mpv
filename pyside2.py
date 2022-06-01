@@ -103,13 +103,11 @@ class GetProcAddressGetter:
         raise 'Cannot initialize OpenGL'
 
     def _init_windows(self):
-        from PySide2.QtGui import QOpenGLContext
         import glfw
+        from PySide2.QtGui import QOffscreenSurface, QOpenGLContext
 
-        from PySide2.QtGui import QOffscreenSurface
         self.surface = QOffscreenSurface()
         self.surface.create()
-        print('init win 2')
 
         if not glfw.init():
             raise 'Cannot initialize OpenGL'

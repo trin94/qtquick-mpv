@@ -99,10 +99,9 @@ class GetProcAddressGetter:
         raise 'Cannot initialize OpenGL'
 
     def _init_windows(self):
-        from PySide6.QtGui import QOpenGLContext
         import glfw
+        from PySide6.QtGui import QOffscreenSurface, QOpenGLContext
 
-        from PySide6.QtGui import QOffscreenSurface
         self.surface = QOffscreenSurface()
         self.surface.create()
 

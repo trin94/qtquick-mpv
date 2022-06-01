@@ -1,49 +1,25 @@
 import ctypes
 import os
-import platform
+import sys
 
+import glfw
 from PySide2 import QtWidgets
 from PySide2.QtCore import QSize, QUrl, Slot, Signal
-from PySide2.QtGui import QOpenGLFramebufferObject
+from PySide2.QtGui import QOpenGLFramebufferObject, QOffscreenSurface, QOpenGLContext
 from PySide2.QtQml import qmlRegisterType
 from PySide2.QtQuick import QQuickFramebufferObject, QQuickView
 
 os.environ["PATH"] = os.path.dirname(__file__) + os.pathsep + os.environ["PATH"]
-from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
-
-system = platform.system()
-
-
-def get_process_address(_, name_bytes: bytes):
-    name_str: str = name_bytes.decode("utf-8")
-
-    if system == 'Linux':
-        from OpenGL import GLX
-        address = GLX.glXGetProcAddress(name_str)
-    elif system == 'Windows':
-        from OpenGL import WGL
-        address = WGL.wglGetProcAddress(name_bytes)
-    else:
-        raise NotImplementedError(f'System {system} not implemented')
-
-    address = ctypes.cast(address, ctypes.c_void_p).value
-
-    # print("func", name_str, 'address', address)
-
-    return address
+from mpv import MPV, MpvGlGetProcAddressFn, MpvRenderContext
 
 
 class MpvObject(QQuickFramebufferObject):
-    """QML widget"""
-
     onUpdate = Signal()
 
     def __init__(self, parent=None):
         print("MpvObject.init")
         super(MpvObject, self).__init__(parent)
         self.mpv = MPV(ytdl=True, vo='libmpv', terminal="yes", msg_level="all=v")
-        self.mpv_gl = None
-        self._proc_addr_wrapper = MpvGlGetProcAddressFn(get_process_address)
         self.onUpdate.connect(self.doUpdate)
 
     def on_update(self):
@@ -67,32 +43,52 @@ class MpvObject(QQuickFramebufferObject):
 
 
 class MpvRenderer(QQuickFramebufferObject.Renderer):
-    """MpvRenderer:
-    This class implements the QQuickFramebufferObject's Renderer subsystem.
-    It augments the base renderer with an instance of mpv's render API."""
 
     def __init__(self, parent: QQuickFramebufferObject):
         print("MpvRenderer.init")
         super(MpvRenderer, self).__init__()
         self.obj = parent
         self.ctx = None
+        self.surface = QOffscreenSurface()
+        self.surface.create()
 
     def createFramebufferObject(self, size: QSize) -> QOpenGLFramebufferObject:
         print("MpvRenderer.createFramebufferObject")
 
-        if self.ctx is None:
-            self.ctx = MpvRenderContext(self.obj.mpv, 'opengl',
-                                        opengl_init_params={'get_proc_address': self.obj._proc_addr_wrapper})
-            self.ctx.update_cb = self.obj.on_update
+        if not self.ctx:
+            self._init()
 
         return QQuickFramebufferObject.Renderer.createFramebufferObject(self, size)
+
+    def _init(self):
+        def _init_opengl_context():
+            if not glfw.init():
+                print('Cannot initialize OpenGL', file=sys.stderr)
+                sys.exit(-1)
+
+            glfw.window_hint(glfw.VISIBLE, glfw.FALSE)
+            window = glfw.create_window(1, 1, "mpvQC-OpenGL", None, None)
+
+            glfw.make_context_current(window)
+            QOpenGLContext.currentContext().makeCurrent(self.surface)
+
+        def _get_process_address(_, name):
+            address = glfw.get_proc_address(name.decode('utf8'))
+            return ctypes.cast(address, ctypes.c_void_p).value
+
+        def _init_render_context():
+            wrapper = MpvGlGetProcAddressFn(_get_process_address)
+            self.ctx = MpvRenderContext(self.obj.mpv, 'opengl', opengl_init_params={'get_proc_address': wrapper})
+            self.ctx.update_cb = self.obj.on_update
+
+        _init_opengl_context()
+        _init_render_context()
 
     def render(self):
         if self.ctx:
             factor = self.obj.scale()
             rect = self.obj.size()
 
-            # width and height are floats
             width = int(rect.width() * factor)
             height = int(rect.height() * factor)
             fbo = int(self.framebufferObject().handle())

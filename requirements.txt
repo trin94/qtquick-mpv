@@ -1,5 +1,5 @@
 PyOpenGL>=3.1.6
-python-mpv>=1.0.1
+mpv>=1.0.3
 PyQt5>=5.15.6
 PyQt6>=6.3.0
 PySide2>=5.15.2.1

@@ -76,7 +76,8 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
 
 
 class GetProcAddressGetter:
-    """ fixme: Class gets obsolete once https://bugreports.qt.io/browse/PYSIDE-971 gets fixed """
+    """This wrapper class is necessary because the required function pointers were only exposed from Qt 6.5 onwards
+    https://bugreports.qt.io/browse/PYSIDE-971"""
 
     def __init__(self):
         self._func = self._find_platform_wrapper()

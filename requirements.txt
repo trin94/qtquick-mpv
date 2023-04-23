@@ -1,7 +1,7 @@
 PyOpenGL>=3.1.6
 mpv>=1.0.3
-PyQt5>=5.15.6
-PyQt6>=6.3.0
-PySide2>=5.15.2.1
-PySide6>=6.3.0
-glfw>=2.5.3
+PyQt5>=5.15.9
+PyQt6>=6.5.0
+PySide2>=5.13.2
+PySide6>=6.5.0
+glfw>=2.5.9

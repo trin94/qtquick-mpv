@@ -1,12 +1,4 @@
-# Installation
-
-1. Clone this repository
-1. Setup virtual environment:
-    1. `python -m venv venv`
-    1. `source venv/bin/activate` (*bash*) or `source venv/bin/activate.fish` (*fish*)
-1. Install requirements `python -m pip install -r requirements.txt`
-
-## State
+# State
 
 | Binding | Windows | Linux |
 |---------|:-------:|:-----:|
@@ -15,7 +7,40 @@
 | PySide2 |    ✅    |   ✅   |
 | PySide6 |    ✅    |   ✅   |
 
-## Video Licences
+# Installation
+
+1. **Install these tools**
+
+   - [Compatible Python version](https://www.python.org/downloads)
+   - [uv](https://github.com/astral-sh/uv)
+   - [just](https://github.com/casey/just)
+   - **Windows users also need**
+     - [Git Bash](https://git-scm.com/downloads)
+     - Be sure to run `just` inside Git Bash
+
+1. **Clone the repository**
+
+1. **Open a terminal** where you cloned it
+
+1. **Initialize the environment**
+
+   ```console
+   just init
+   ```
+
+1. **Add libmpv to your path**
+
+   - **Linux**: Install `libmpv` through your package manager
+   - **Windows**: Download [libmpv (mpv-dev-x86_64)](https://github.com/shinchiro/mpv-winbuild-cmake/releases), extract
+     it, and place the `libmpv-*.dll` in the repository’s root folder
+
+1. **Run the sample**
+
+   ```console
+   just run-<pyside2|pyside6|pyqt5|pyqt6>
+   ```
+
+# Video Licences
 
 Videos are from: https://github.com/Matroska-Org/matroska-test-files
 
